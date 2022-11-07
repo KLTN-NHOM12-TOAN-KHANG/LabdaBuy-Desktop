@@ -5,9 +5,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import com.example.kltn.SpringAPILambdaBuy.common.request.LoginDto;
-import com.example.kltn.SpringAPILambdaBuy.common.request.RegisterDto;
+import com.example.kltn.SpringAPILambdaBuy.common.request.authen.LoginDto;
+import com.example.kltn.SpringAPILambdaBuy.common.request.authen.RegisterDto;
 import com.example.kltn.SpringAPILambdaBuy.common.response.ResponseCommon;
+import com.example.kltn.SpringAPILambdaBuy.common.response.UserResponseDto;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kltn.nhom12.LambdaBuyDesktop.common.ConstantGlobal;
 
@@ -26,9 +28,13 @@ public class AuthenticationWebService {
 		return response.getBody();
 	}
 	
-	public ResponseCommon login (LoginDto loginDto) {
+	public UserResponseDto login (LoginDto loginDto) {
 		String uri = ConstantGlobal.API_PARENT + "/authentication/login";
 		ResponseEntity<ResponseCommon> response = restTemplate.postForEntity(uri, loginDto, ResponseCommon.class);
-		return response.getBody();
+		if(response.getBody().success) {
+			UserResponseDto user = mapper.convertValue(response.getBody().data, new TypeReference<UserResponseDto>() {});
+			return user;
+		}
+		return null;
 	}
 }
