@@ -1,14 +1,24 @@
 package com.kltn.nhom12.LambdaBuyDesktop.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.example.kltn.SpringAPILambdaBuy.common.request.user.CreateUserDto;
+import com.example.kltn.SpringAPILambdaBuy.common.request.user.CreateUserProfileDto;
+import com.example.kltn.SpringAPILambdaBuy.common.request.user.UpdateUserDto;
 import com.example.kltn.SpringAPILambdaBuy.common.response.ResponseCommon;
 import com.example.kltn.SpringAPILambdaBuy.common.response.UserResponseDto;
 import com.example.kltn.SpringAPILambdaBuy.entities.UserEntity;
+import com.example.kltn.SpringAPILambdaBuy.entities.UserRole;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,7 +61,13 @@ public class UserWebService  {
 		ResponseEntity<ResponseCommon> response = restTemplate.getForEntity(uri, ResponseCommon.class);
 		if(response.getBody().success) {
 			List<UserResponseDto> listUser = mapper.convertValue(response.getBody().data, new TypeReference<List<UserResponseDto>>() {});
-			return listUser;
+			List<UserResponseDto> result = new ArrayList<>();
+			for (UserResponseDto userResponseDto : listUser) {
+				if(!userResponseDto.getIsLocked()) {
+					result.add(userResponseDto);
+				}
+			}
+			return result;
 		}
 		return null;
 	}
@@ -89,6 +105,42 @@ public class UserWebService  {
 	public ResponseCommon<?> saveUser(UserEntity user) {
 		String uri = ConstantGlobal.API_PARENT + "/user/save";
 		ResponseEntity<ResponseCommon> response = restTemplate.postForEntity(uri, user, ResponseCommon.class);
+		return response.getBody();
+	}
+	
+	public ResponseCommon<?> createUser(CreateUserDto createUserDto) {
+		String uri = ConstantGlobal.API_PARENT + "/user/create";
+		ResponseEntity<ResponseCommon> response = restTemplate.postForEntity(uri, createUserDto, ResponseCommon.class);
+		return response.getBody();
+	}
+	
+	public UserResponseDto createUserProfile(CreateUserProfileDto createUserProfileDto) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		
+		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+		map.add("username", createUserProfileDto.getUsername());
+		map.add("email", createUserProfileDto.getEmail());
+		map.add("password", "123123");
+		map.add("phoneNumber", createUserProfileDto.getPhoneNumber());
+		map.add("address", createUserProfileDto.getAddress());
+		map.add("avatar", createUserProfileDto.getAvatar());
+		map.add("firstName", createUserProfileDto.getFirstName());
+		map.add("lastName", createUserProfileDto.getLastName());
+		
+		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+		
+		String uri = ConstantGlobal.API_PARENT + "/user/create-user-profile";
+		ResponseEntity<UserResponseDto> response = restTemplate.postForEntity(uri, request, UserResponseDto.class);
+		if(response.getBody() != null) {
+			 return response.getBody();
+		}
+		return null;
+	}
+	
+	public ResponseCommon<?> updateUser(UpdateUserDto updateUserProfile) {
+		String uri = ConstantGlobal.API_PARENT + "/user/update";
+		ResponseEntity<ResponseCommon> response = restTemplate.postForEntity(uri, updateUserProfile, ResponseCommon.class);
 		return response.getBody();
 	}
 	

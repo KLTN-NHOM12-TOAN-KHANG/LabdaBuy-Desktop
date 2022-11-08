@@ -1,6 +1,11 @@
 package com.kltn.nhom12.LambdaBuyDesktop.service;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.kltn.SpringAPILambdaBuy.common.request.profile.UpdateProfileDto;
@@ -30,12 +35,25 @@ public class ProfileWebService {
 		return null;
 	}
 	
-	public ProfileResponseDto updateProfile(UpdateProfileDto updateProfileDto) {
-		String uri = ConstantGlobal.API_PARENT + "/";
-		restTemplate.put(uri, updateProfileDto);
-		ProfileResponseDto profileDto = getProfileById(updateProfileDto.getId());
-		if(profileDto != null) {
-			return profileDto;
+	public ResponseCommon updateProfile(UpdateProfileDto updateProfileDto) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		
+		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+		map.add("id", updateProfileDto.getId());
+		map.add("phoneNumber", updateProfileDto.getPhoneNumber());
+		map.add("address", updateProfileDto.getAddress());
+		map.add("avatar", updateProfileDto.getAvatar());
+		map.add("firstName", updateProfileDto.getFirstName());
+		map.add("lastName", updateProfileDto.getLastName());
+		
+		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
+		
+		String uri = ConstantGlobal.API_PARENT + "/profile/update";
+		ResponseEntity<ResponseCommon> response = restTemplate.postForEntity(uri, request, ResponseCommon.class);
+
+		if(response.getBody().success) {
+			 return response.getBody();
 		}
 		return null;
 	}

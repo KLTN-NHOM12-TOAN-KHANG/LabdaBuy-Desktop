@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.example.kltn.SpringAPILambdaBuy.common.response.UserResponseDto;
+import com.kltn.nhom12.LambdaBuyDesktop.action.UserController;
 
 public class UserFrm extends JFrame {
 
@@ -25,6 +26,10 @@ public class UserFrm extends JFrame {
         openFileChooser = new JFileChooser();
         openFileChooser.setCurrentDirectory(new File("D:\\"));
         openFileChooser.setFileFilter(new FileNameExtensionFilter("PNG images", "png"));
+        
+        UserController controller = new UserController(jbtSave, jtfId, jtfUsername, jtfEmail, jtfFirstName, jtfLastName, jtfPhoneNumber, jlbAvatar, jtaAddress, jlbMessage);
+        controller.setView(userDto);
+        controller.setEvent();
     }
 
     /**

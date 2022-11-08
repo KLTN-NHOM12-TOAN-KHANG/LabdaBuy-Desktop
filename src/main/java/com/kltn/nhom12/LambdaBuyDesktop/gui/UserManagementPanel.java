@@ -113,7 +113,7 @@ public class UserManagementPanel extends JPanel {
         });
 
         jtfSearch.setFont(new java.awt.Font("Arial", 0, 14)); // NOI18N
-        jtfSearch.setText("jTextField1");
+        jtfSearch.setText("");
 
         javax.swing.GroupLayout jpnViewLayout = new javax.swing.GroupLayout(jpnView);
         jpnView.setLayout(jpnViewLayout);

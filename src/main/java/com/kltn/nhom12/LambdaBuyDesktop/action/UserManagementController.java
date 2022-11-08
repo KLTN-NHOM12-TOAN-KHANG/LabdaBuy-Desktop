@@ -20,6 +20,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import com.example.kltn.SpringAPILambdaBuy.common.response.ProfileResponseDto;
 import com.example.kltn.SpringAPILambdaBuy.common.response.UserResponseDto;
 import com.kltn.nhom12.LambdaBuyDesktop.gui.UserFrm;
 import com.kltn.nhom12.LambdaBuyDesktop.service.ProfileWebService;
@@ -125,15 +126,33 @@ public class UserManagementController {
 					selectedRowIndex = table.convertRowIndexToModel(selectedRowIndex);
 					
 					UserResponseDto user = new UserResponseDto();
+					user.setProfileDto(new ProfileResponseDto());
 					user.setId(model.getValueAt(selectedRowIndex, 1).toString());
 					user.setUsername(model.getValueAt(selectedRowIndex, 2).toString());
 					user.setEmail(model.getValueAt(selectedRowIndex, 3).toString());
-					user.getProfile().setFirstName(model.getValueAt(selectedRowIndex, 4).toString());
-					user.getProfile().setLastName(model.getValueAt(selectedRowIndex, 5).toString());
-					user.getProfile().setAvatar(model.getValueAt(selectedRowIndex, 6).toString());
-					user.getProfile().setPhoneNumber(model.getValueAt(selectedRowIndex, 7).toString());
-					user.getProfile().setAddress(model.getValueAt(selectedRowIndex, 8).toString());
 					
+					UserResponseDto findUser = userWebService.getUserById(UserManagementController.this.model.getValueAt(selectedRowIndex, 1).toString());
+					
+					ProfileResponseDto profile = user.getProfile();
+					profile.setId(findUser.getProfile().getId());
+					profile.setFirstName(model.getValueAt(selectedRowIndex, 4).toString());
+					profile.setLastName(model.getValueAt(selectedRowIndex, 5).toString());
+					if(model.getValueAt(selectedRowIndex, 6) != null) { 
+						profile.setAvatar(model.getValueAt(selectedRowIndex, 6).toString());
+					} else {
+						profile.setAvatar(null);
+					}
+					if(model.getValueAt(selectedRowIndex, 7) != null) { 
+						profile.setPhoneNumber(model.getValueAt(selectedRowIndex, 7).toString());
+					} else {
+						profile.setPhoneNumber(null);
+					}	
+					if(model.getValueAt(selectedRowIndex, 8) != null) { 
+						profile.setAddress(model.getValueAt(selectedRowIndex, 8).toString());
+					} else {
+						profile.setAddress(null);
+					}
+					user.setProfileDto(profile);
 					UserFrm frame = null;
 					frame = new UserFrm(user);
 
@@ -232,6 +251,7 @@ public class UserManagementController {
 				userWebService.deteleUserById(id);
 				
 				jtfSearch.setText("Khoá tài khoản người dùng " + id + " thành công!");
+				setDataToTable();
 			}
 		});
 	}
