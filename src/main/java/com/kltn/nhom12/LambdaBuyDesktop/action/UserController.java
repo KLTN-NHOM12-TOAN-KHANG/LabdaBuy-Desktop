@@ -3,12 +3,15 @@ package com.kltn.nhom12.LambdaBuyDesktop.action;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.UUID;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import com.example.kltn.SpringAPILambdaBuy.common.request.profile.UpdateProfileDto;
+import com.example.kltn.SpringAPILambdaBuy.common.request.user.CreateUserProfileDto;
 import com.example.kltn.SpringAPILambdaBuy.common.response.ProfileResponseDto;
 import com.example.kltn.SpringAPILambdaBuy.common.response.UserResponseDto;
 import com.kltn.nhom12.LambdaBuyDesktop.service.ProfileWebService;
@@ -22,17 +25,18 @@ public class UserController {
 	private JTextField jtfFirstName;
 	private JTextField jtfLastName;
 	private JTextField jtfPhoneNumber;
-	private JTextField jtfAvatar;
-	private JTextField jtfAddress;
+	private JLabel jlbAvatar;
+	private JTextArea jtaAddress;
 	
 	private JLabel jlbMessage;
 	private UserResponseDto user = null;
+	private CreateUserProfileDto createUserProfileDto = null;
 	private UpdateProfileDto updateProfile = null;
 	private ProfileResponseDto returnProfile = null;
 	private UserWebService userWebService;
 	private ProfileWebService profileWebService;
 	
-	public UserController(JButton btnSubmit, JTextField jtfId, JTextField jtfUsename, JTextField jtfEmail, JTextField jtfFirstName, JTextField jtfLastName, JTextField jtfPhoneNumber, JTextField jtfAvatar, JTextField jtfAddress, JLabel jlbMessage) {
+	public UserController(JButton btnSubmit, JTextField jtfId, JTextField jtfUsename, JTextField jtfEmail, JTextField jtfFirstName, JTextField jtfLastName, JTextField jtfPhoneNumber, JLabel jlbAvatar, JTextArea jtaAddress, JLabel jlbMessage) {
 		this.btnSubmit = btnSubmit;
 		this.jtfId = jtfId;
 		this.jtfUsername = jtfUsename;
@@ -40,8 +44,8 @@ public class UserController {
 		this.jtfFirstName = jtfFirstName;
 		this.jtfLastName = jtfLastName;
 		this.jtfPhoneNumber = jtfPhoneNumber;
-		this.jtfAvatar = jtfAvatar;
-		this.jtfAddress = jtfAddress;
+		this.jlbAvatar = jlbAvatar;
+		this.jtaAddress = jtaAddress;
 		
 		this.jlbMessage = jlbMessage;
 		this.userWebService = new UserWebService();
@@ -51,19 +55,23 @@ public class UserController {
 	public void setView(UserResponseDto userResponseDto) {
 		try {
 			this.user = userResponseDto;
-			this.returnProfile = userResponseDto.getProfile();
+			if(user.getId() == null) {
+				jtfId.disable();
+			} else {
+				this.returnProfile = userResponseDto.getProfile();
+				jtfId.setText(user.getId());
+				jtfId.disable();
+				jtfUsername.setText(user.getUsername());
+				jtfUsername.disable();
+				jtfEmail.setText(user.getEmail());
+				jtfEmail.disable();
+				jtfFirstName.setText(returnProfile.getFirstName());
+				jtfLastName.setText(returnProfile.getLastName());
+				jtfPhoneNumber.setText(returnProfile.getPhoneNumber());
+				jlbAvatar.setText(returnProfile.getAvatar());
+				jtaAddress.setText(returnProfile.getAddress());
+			}
 			
-			jtfId.setText(user.getId());
-			jtfId.disable();
-			jtfUsername.setText(user.getUsername());
-			jtfUsername.disable();
-			jtfEmail.setText(user.getEmail());
-			jtfEmail.disable();
-			jtfFirstName.setText(user.getProfile().getFirstName());
-			jtfLastName.setText(user.getProfile().getLastName());
-			jtfPhoneNumber.setText(user.getProfile().getPhoneNumber());
-			jtfAvatar.setText(user.getProfile().getAvatar());
-			jtfAddress.setText(user.getProfile().getAddress());
 		} catch (NullPointerException e) {
 			e.printStackTrace();
 		}
@@ -96,25 +104,34 @@ public class UserController {
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if(jtfUsername.getText().length() == 0 || jtfEmail.getText().length() == 0 || jtfFirstName.getText().length() == 0 || jtfLastName.getText().length() == 0 || jtfPhoneNumber.getText().length() == 0 || jtfAvatar.getText().length() == 0 || jtfAddress.getText().length() == 0) {
+				if(jtfUsername.getText().length() == 0 || jtfEmail.getText().length() == 0 || jtfFirstName.getText().length() == 0 || jtfLastName.getText().length() == 0 || jtfPhoneNumber.getText().length() == 0 || jlbAvatar.getText() == null || jtaAddress.getText().length() == 0) {
 					jlbMessage.setText("Vui lòng nhập dữ liệu bắt buộc!");
 					btnSubmit.setEnabled(false);
 				} else {
-//					user.setId(jtfId.getText());
-//					user.setUsername(jtfUsername.getText());
-//					user.setEmail(jtfEmail.getText());
-					
-					updateProfile.setId(user.getProfile().getId());
-					updateProfile.setFirstName(jtfFirstName.getText());
-					updateProfile.setLastName(jtfLastName.getText());
-					updateProfile.setPhoneNumber(jtfPhoneNumber.getText());
-					updateProfile.setAvatar(jtfAvatar.getText());
-					updateProfile.setAddress(jtfAddress.getText());
-					ProfileResponseDto profileDto = profileWebService.updateProfile(updateProfile);
-					
-//					user.setProfileDto(profileDto);
-//					userWebService.saveUser(user)
-					jlbMessage.setText("Cập nhật dữ liệu thành công!");
+					if(user.getId() != null) {
+						updateProfile = new UpdateProfileDto();
+						updateProfile.setId(user.getProfile().getId());
+						updateProfile.setFirstName(jtfFirstName.getText());
+						updateProfile.setLastName(jtfLastName.getText());
+						updateProfile.setPhoneNumber(jtfPhoneNumber.getText());
+						updateProfile.setAvatar(jlbAvatar.getText());
+						updateProfile.setAddress(jtaAddress.getText());
+						profileWebService.updateProfile(updateProfile);
+						
+						jlbMessage.setText("Cập nhật dữ liệu thành công!");
+					} else {
+						createUserProfileDto = new CreateUserProfileDto();
+						createUserProfileDto.setUsername(jtfUsername.getText());
+						createUserProfileDto.setEmail(jtfEmail.getText());
+						createUserProfileDto.setFirstName(jtfFirstName.getText());
+						createUserProfileDto.setLastName(jtfLastName.getText());
+						createUserProfileDto.setPhoneNumber(jtfPhoneNumber.getText());
+						createUserProfileDto.setAvatar(jlbAvatar.getText());
+						createUserProfileDto.setAddress(jtaAddress.getText());
+						userWebService.createUserProfile(createUserProfileDto);
+						
+						jlbMessage.setText("Tạo người dùng thành công!");
+					}
 				}
 			}
 		});
