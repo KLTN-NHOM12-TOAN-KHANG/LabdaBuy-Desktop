@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -20,43 +21,44 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-import com.example.kltn.SpringAPILambdaBuy.common.response.ProfileResponseDto;
-import com.example.kltn.SpringAPILambdaBuy.common.response.UserResponseDto;
-import com.kltn.nhom12.LambdaBuyDesktop.gui.UserFrm;
-import com.kltn.nhom12.LambdaBuyDesktop.service.ProfileDesktopService;
-import com.kltn.nhom12.LambdaBuyDesktop.service.UserDesktopService;
-import com.kltn.nhom12.LambdaBuyDesktop.utility.ClassTableUserModel;
+import com.example.kltn.SpringAPILambdaBuy.common.response.BrandResponseDto;
+import com.example.kltn.SpringAPILambdaBuy.common.response.ProductResponseDto;
+import com.kltn.nhom12.LambdaBuyDesktop.gui.BrandFrm;
+import com.kltn.nhom12.LambdaBuyDesktop.gui.ProductFrm;
+import com.kltn.nhom12.LambdaBuyDesktop.service.BrandDesktopService;
+import com.kltn.nhom12.LambdaBuyDesktop.service.ProductDesktopService;
+import com.kltn.nhom12.LambdaBuyDesktop.utility.ClassTableBrandModel;
+import com.kltn.nhom12.LambdaBuyDesktop.utility.ClassTableProductModel;
 
-public class UserManagementController {
+public class ProductManagementController {
 	private JPanel jpnView;
 	private JButton btnAdd;
 	private JButton btnSub;
 	private JTextField jtfSearch;
 	private String token;
 	
-	private UserDesktopService userWebService = null;
-	private ProfileDesktopService profileWebService = null;
-	private String[] listColumn = {"STT", "Mã người dùng", "Tên người dùng", "Email", "Tên", "Họ", "Ảnh đại diện", "Số điện thoại", "Địa chỉ"};
+	private ProductDesktopService productDesktopService;
+	
+	private String[] listColumn = {"STT", "Mã sản phẩm", "Tên sản phẩm", "Mô tả", "Đơn giá", "Giảm giá", "Hình ảnh", "Số lượng", "Nơi sản xuất", "Năm sản xuất", "Đặc biệt", "Loại sản phẩm", "Thương hiệu", "Nhà phân phối"};
 	private TableRowSorter<TableModel> rowSorter = null;
 	
 	private JTable table = null;
 	private DefaultTableModel model = null;
 	
-	public UserManagementController(JPanel jpnView, JButton btnAdd, JButton btnSub, JTextField jtfSearch, String token) {
+	public ProductManagementController(JPanel jpnView, JButton btnAdd, JButton btnSub, JTextField jtfSearch, String token) {
 		this.jpnView = jpnView;
 		this.btnAdd = btnAdd;
 		this.btnSub = btnSub;
 		this.jtfSearch = jtfSearch;
 		this.token = token;
 		
-		userWebService = new UserDesktopService();
-		profileWebService = new ProfileDesktopService();
+		productDesktopService = new ProductDesktopService();
 	}
 	
 	public void setDataToTable() {
 		try {
-			List<UserResponseDto> listItem = userWebService.getAllUser(token);
-			model = new ClassTableUserModel().setTableModel(listItem, listColumn);
+			List<ProductResponseDto> listItem = productDesktopService.getAll(token);
+			model = new ClassTableProductModel().setTableModel(listItem, listColumn);
 			table = new JTable(model);
 			
 			rowSorter = new TableRowSorter<>(table.getModel());
@@ -127,38 +129,25 @@ public class UserManagementController {
 					int selectedRowIndex = table.getSelectedRow();
 					selectedRowIndex = table.convertRowIndexToModel(selectedRowIndex);
 					
-					UserResponseDto user = new UserResponseDto();
-					user.setProfileDto(new ProfileResponseDto());
-					user.setId(model.getValueAt(selectedRowIndex, 1).toString());
-					user.setUsername(model.getValueAt(selectedRowIndex, 2).toString());
-					user.setEmail(model.getValueAt(selectedRowIndex, 3).toString());
+					ProductResponseDto product = new ProductResponseDto();
+					product.setId(model.getValueAt(selectedRowIndex, 1).toString());
+					product.setName(model.getValueAt(selectedRowIndex, 2).toString());
+					product.setDescription(model.getValueAt(selectedRowIndex, 3).toString());
+					product.setUnitPrice(Double.parseDouble(model.getValueAt(selectedRowIndex, 4).toString()));
+					product.setDiscount(Double.parseDouble(model.getValueAt(selectedRowIndex, 5).toString()));
+					product.setImage(model.getValueAt(selectedRowIndex, 6).toString());
+					product.setInStock(Integer.parseInt(model.getValueAt(selectedRowIndex, 7).toString()));
+					product.setCountry(model.getValueAt(selectedRowIndex, 8).toString());
+					product.setManufacturedDate(Integer.parseInt(model.getValueAt(selectedRowIndex, 9).toString()));
+					product.setSpecial(Boolean.parseBoolean(model.getValueAt(selectedRowIndex, 10).toString()));
+					product.setCategory(model.getValueAt(selectedRowIndex, 11).toString());
+					product.setBrand(model.getValueAt(selectedRowIndex, 12).toString());
+					product.setSupplier(model.getValueAt(selectedRowIndex, 13).toString());
 					
-					UserResponseDto findUser = userWebService.getUserById(UserManagementController.this.model.getValueAt(selectedRowIndex, 1).toString(), token);
-					
-					ProfileResponseDto profile = user.getProfile();
-					profile.setId(findUser.getProfile().getId());
-					profile.setFirstName(model.getValueAt(selectedRowIndex, 4).toString());
-					profile.setLastName(model.getValueAt(selectedRowIndex, 5).toString());
-					if(model.getValueAt(selectedRowIndex, 6) != null) { 
-						profile.setAvatar(model.getValueAt(selectedRowIndex, 6).toString());
-					} else {
-						profile.setAvatar(null);
-					}
-					if(model.getValueAt(selectedRowIndex, 7) != null) { 
-						profile.setPhoneNumber(model.getValueAt(selectedRowIndex, 7).toString());
-					} else {
-						profile.setPhoneNumber(null);
-					}	
-					if(model.getValueAt(selectedRowIndex, 8) != null) { 
-						profile.setAddress(model.getValueAt(selectedRowIndex, 8).toString());
-					} else {
-						profile.setAddress(null);
-					}
-					user.setProfileDto(profile);
-					UserFrm frame = null;
-					frame = new UserFrm(user, token);
+					ProductFrm frame = null;
+					frame = new ProductFrm(product, token);
 
-					frame.setTitle("Thông tin người dùng");
+					frame.setTitle("Thông tin sản phẩm");
 					frame.setResizable(false);
 					frame.setLocationRelativeTo(null);
 					frame.setVisible(true);
@@ -210,9 +199,9 @@ public class UserManagementController {
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				UserFrm frame = null;
-				frame = new UserFrm(new UserResponseDto(), token);
-				frame.setTitle("Thông tin người dùng");
+				ProductFrm frame = null;
+				frame = new ProductFrm(new ProductResponseDto(), token);
+				frame.setTitle("Thông tin sản phẩm");
 				frame.setLocationRelativeTo(null);
 				frame.setResizable(false);
 				frame.setVisible(true);
@@ -250,9 +239,9 @@ public class UserManagementController {
 				selectedRowIndex = table.convertRowIndexToModel(selectedRowIndex);
 				
 				String id = (String)model.getValueAt(selectedRowIndex, 1);
-				userWebService.deteleUserById(id, token);
+//				userWebService.deteleUserById(id);
 				
-				jtfSearch.setText("Khoá tài khoản người dùng " + id + " thành công!");
+				jtfSearch.setText("Khoá sản phẩm " + id + " thành công!");
 				setDataToTable();
 			}
 		});

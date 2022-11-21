@@ -14,8 +14,8 @@ import com.example.kltn.SpringAPILambdaBuy.common.request.profile.UpdateProfileD
 import com.example.kltn.SpringAPILambdaBuy.common.request.user.CreateUserProfileDto;
 import com.example.kltn.SpringAPILambdaBuy.common.response.ProfileResponseDto;
 import com.example.kltn.SpringAPILambdaBuy.common.response.UserResponseDto;
-import com.kltn.nhom12.LambdaBuyDesktop.service.ProfileWebService;
-import com.kltn.nhom12.LambdaBuyDesktop.service.UserWebService;
+import com.kltn.nhom12.LambdaBuyDesktop.service.ProfileDesktopService;
+import com.kltn.nhom12.LambdaBuyDesktop.service.UserDesktopService;
 
 public class UserController {
 	private JButton btnSubmit;
@@ -33,10 +33,12 @@ public class UserController {
 	private CreateUserProfileDto createUserProfileDto = null;
 	private UpdateProfileDto updateProfile = null;
 	private ProfileResponseDto returnProfile = null;
-	private UserWebService userWebService;
-	private ProfileWebService profileWebService;
+	private UserDesktopService userWebService;
+	private ProfileDesktopService profileWebService;
+	private String token;
 	
-	public UserController(JButton btnSubmit, JTextField jtfId, JTextField jtfUsename, JTextField jtfEmail, JTextField jtfFirstName, JTextField jtfLastName, JTextField jtfPhoneNumber, JLabel jlbAvatar, JTextArea jtaAddress, JLabel jlbMessage) {
+	public UserController(String token, JButton btnSubmit, JTextField jtfId, JTextField jtfUsename, JTextField jtfEmail, JTextField jtfFirstName, JTextField jtfLastName, JTextField jtfPhoneNumber, JLabel jlbAvatar, JTextArea jtaAddress, JLabel jlbMessage) {
+		this.token = token;
 		this.btnSubmit = btnSubmit;
 		this.jtfId = jtfId;
 		this.jtfUsername = jtfUsename;
@@ -48,8 +50,8 @@ public class UserController {
 		this.jtaAddress = jtaAddress;
 		
 		this.jlbMessage = jlbMessage;
-		this.userWebService = new UserWebService();
-		this.profileWebService = new ProfileWebService();
+		this.userWebService = new UserDesktopService();
+		this.profileWebService = new ProfileDesktopService();
 	}
 	
 	public void setView(UserResponseDto userResponseDto) {
@@ -116,9 +118,10 @@ public class UserController {
 						updateProfile.setPhoneNumber(jtfPhoneNumber.getText());
 						updateProfile.setAvatar(jlbAvatar.getText());
 						updateProfile.setAddress(jtaAddress.getText());
-						profileWebService.updateProfile(updateProfile);
+						profileWebService.updateProfile(updateProfile, token);
 						
 						jlbMessage.setText("Cập nhật dữ liệu thành công!");
+						
 					} else {
 						createUserProfileDto = new CreateUserProfileDto();
 						createUserProfileDto.setUsername(jtfUsername.getText());
@@ -128,7 +131,7 @@ public class UserController {
 						createUserProfileDto.setPhoneNumber(jtfPhoneNumber.getText());
 						createUserProfileDto.setAvatar(jlbAvatar.getText());
 						createUserProfileDto.setAddress(jtaAddress.getText());
-						userWebService.createUserProfile(createUserProfileDto);
+						userWebService.createUserProfile(createUserProfileDto, token);
 						
 						jlbMessage.setText("Tạo người dùng thành công!");
 					}

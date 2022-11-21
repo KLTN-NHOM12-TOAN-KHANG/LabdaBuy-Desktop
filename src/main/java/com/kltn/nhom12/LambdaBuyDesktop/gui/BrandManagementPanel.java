@@ -1,18 +1,17 @@
 package com.kltn.nhom12.LambdaBuyDesktop.gui;
-
 import javax.swing.JPanel;
 
-import com.kltn.nhom12.LambdaBuyDesktop.action.UserManagementController;
+import com.kltn.nhom12.LambdaBuyDesktop.action.BrandManagementController;
 
-public class UserManagementPanel extends JPanel {
+public class BrandManagementPanel extends JPanel {
 
     /**
      * Creates new form QLNguoidungPanel
      */
-    public UserManagementPanel(String token){
+    public BrandManagementPanel(String token){
         initComponents();
         
-        UserManagementController controller = new UserManagementController(jpnView, btnAdd, btnSub, jtfSearch, token);
+        BrandManagementController controller = new BrandManagementController(jpnView, btnAdd, btnSub, jtfSearch, token);
         controller.setDataToTable();
         controller.setEvent();
     }
@@ -206,5 +205,5 @@ public class UserManagementPanel extends JPanel {
     private javax.swing.JPanel jpnRoot;
     private javax.swing.JPanel jpnView;
     private javax.swing.JTextField jtfSearch;
-    // End of variables declaration                      
+    // End of variables declaration                             
 }

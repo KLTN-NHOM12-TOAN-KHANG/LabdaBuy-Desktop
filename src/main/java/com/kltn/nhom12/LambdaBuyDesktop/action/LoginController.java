@@ -13,11 +13,13 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import com.example.kltn.SpringAPILambdaBuy.common.request.authen.LoginDto;
+import com.example.kltn.SpringAPILambdaBuy.common.response.AuthResponse;
 import com.example.kltn.SpringAPILambdaBuy.common.response.UserResponseDto;
 import com.example.kltn.SpringAPILambdaBuy.entities.UserEntity;
 import com.example.kltn.SpringAPILambdaBuy.entities.UserRole;
 import com.kltn.nhom12.LambdaBuyDesktop.gui.MainFrm;
-import com.kltn.nhom12.LambdaBuyDesktop.service.AuthenticationWebService;
+import com.kltn.nhom12.LambdaBuyDesktop.service.AuthenticationDesktopService;
+import com.kltn.nhom12.LambdaBuyDesktop.service.UserDesktopService;
 
 public class LoginController {
 	private Dialog dialog;
@@ -26,7 +28,8 @@ public class LoginController {
     private JTextField jtfMatkhau;
     private JLabel jlbMessage;
 //    private List<UserEntity> listUser;
-    private AuthenticationWebService authenticationWebService;
+    private AuthenticationDesktopService authenticationWebService;
+    private UserDesktopService userDesktopService;
     
 //    private NguoiDungDAO nguoidungDAO = null;
     
@@ -36,7 +39,8 @@ public class LoginController {
     	this.jtfMatkhau = jtfMatkhau;
     	this.jlbMessage = jlbMessage;
     	
-    	authenticationWebService = new AuthenticationWebService();
+    	authenticationWebService = new AuthenticationDesktopService();
+    	userDesktopService = new UserDesktopService();
 //    	this.api = APIClient.getClient().create(UserAPI.class);
 //    	this.listUser = 
 //    	this.nguoidungDAO = new NguoidungImpl();
@@ -55,14 +59,15 @@ public class LoginController {
 						loginDto.setUsername(jtfTendangnhap.getText());
 						loginDto.setEmail(jtfTendangnhap.getText());
 						loginDto.setPassword(jtfMatkhau.getText());
-						UserResponseDto user = (UserResponseDto) authenticationWebService.login(loginDto);
+						AuthResponse auth = (AuthResponse) authenticationWebService.login(loginDto);
+						UserResponseDto user = userDesktopService.getCurrentUser(auth.getAccessToken());
 						if(user == null) {
 							jlbMessage.setText("Tên đăng nhập và mật khẩu không đúng!");
 						}else {
 //							dialog.dispose();
 							if(user.getRole() == UserRole.ADMIN) {
 								jlbMessage.setText("Success");
-								MainFrm frame = new MainFrm(user);
+								MainFrm frame = new MainFrm(user, "Bearer " + auth.getAccessToken());
 								frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 								frame.setVisible(true);
 							}else {

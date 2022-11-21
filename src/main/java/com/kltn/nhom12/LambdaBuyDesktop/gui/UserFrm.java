@@ -20,14 +20,14 @@ public class UserFrm extends JFrame {
     /**
      * Creates new form ProductFrm
      */
-    public UserFrm(UserResponseDto userDto) {
+    public UserFrm(UserResponseDto userDto, String token) {
         initComponents();
         
         openFileChooser = new JFileChooser();
         openFileChooser.setCurrentDirectory(new File("D:\\"));
         openFileChooser.setFileFilter(new FileNameExtensionFilter("PNG images", "png"));
         
-        UserController controller = new UserController(jbtSave, jtfId, jtfUsername, jtfEmail, jtfFirstName, jtfLastName, jtfPhoneNumber, jlbAvatar, jtaAddress, jlbMessage);
+        UserController controller = new UserController(token, jbtSave, jtfId, jtfUsername, jtfEmail, jtfFirstName, jtfLastName, jtfPhoneNumber, jlbAvatar, jtaAddress, jlbMessage);
         controller.setView(userDto);
         controller.setEvent();
     }
@@ -64,7 +64,7 @@ public class UserFrm extends JFrame {
         jtaAddress = new javax.swing.JTextArea();
         jtfPhoneNumber = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jbtSave.setText("+ Lưu dữ liệu");
         jbtSave.addActionListener(new java.awt.event.ActionListener() {

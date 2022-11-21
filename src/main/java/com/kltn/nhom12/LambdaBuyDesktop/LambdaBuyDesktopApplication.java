@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
@@ -18,19 +19,20 @@ import com.example.kltn.SpringAPILambdaBuy.entities.UserEntity;
 import com.example.kltn.SpringAPILambdaBuy.entities.UserRole;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kltn.nhom12.LambdaBuyDesktop.service.AuthenticationWebService;
-import com.kltn.nhom12.LambdaBuyDesktop.service.UserWebService;
+import com.kltn.nhom12.LambdaBuyDesktop.service.AuthenticationDesktopService;
+import com.kltn.nhom12.LambdaBuyDesktop.service.UserDesktopService;
 
 @SpringBootApplication
+//@EnableCaching
 public class LambdaBuyDesktopApplication {
-	public static UserWebService userWebService = new UserWebService();
-	public static AuthenticationWebService authenticationWebService = new AuthenticationWebService();
+	public static UserDesktopService userWebService = new UserDesktopService();
+	public static AuthenticationDesktopService authenticationWebService = new AuthenticationDesktopService();
 	
 	public static void main(String[] args) {
 		SpringApplication.run(LambdaBuyDesktopApplication.class, args);
 	
-		List<UserResponseDto> list = userWebService.getAllUser();
-		System.out.println(list);
+//		List<UserResponseDto> list = userWebService.getAllUser();
+//		System.out.println(list);
 //		List<UserResponseDto> list = userWebService.getAllUser();
 //		if(!list.isEmpty()) {
 //			for (UserResponseDto userResponseDto : list) {

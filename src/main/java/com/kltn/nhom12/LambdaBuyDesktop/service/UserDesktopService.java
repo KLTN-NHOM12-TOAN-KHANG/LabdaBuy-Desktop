@@ -3,8 +3,12 @@ package com.kltn.nhom12.LambdaBuyDesktop.service;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.Cookie;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,11 +31,12 @@ import com.fasterxml.jackson.databind.type.TypeBindings;
 import com.kltn.nhom12.LambdaBuyDesktop.common.ConstantGlobal;
 
 @Service
-public class UserWebService  {
+public class UserDesktopService  {
 	private RestTemplate restTemplate;
 	private ObjectMapper mapper;
 	
-	public UserWebService() {
+	
+	public UserDesktopService() {
 		restTemplate = new RestTemplate();
 		mapper = new ObjectMapper();
 	}
@@ -55,10 +60,30 @@ public class UserWebService  {
 		}
 	 * @return
 	 */
+	public UserResponseDto getCurrentUser(String token) {
+		String uri = ConstantGlobal.API_PARENT + "/getCurrentUser";
+		ResponseEntity<ResponseCommon> response = restTemplate.postForEntity(uri, token, ResponseCommon.class);
+		
+//		ResponseEntity<ResponseCommon> response = restTemplate.getForEntity(uri, ResponseCommon.class);
+		if(response.getBody().success) {
+			UserResponseDto user = mapper.convertValue(response.getBody().data, new TypeReference<UserResponseDto>() {});
+			return user;
+		}
+		return null;
+	}
 	
-	public List<UserResponseDto> getAllUser() {
+	
+	public List<UserResponseDto> getAllUser(String token) {
 		String uri = ConstantGlobal.API_PARENT + "/users";
-		ResponseEntity<ResponseCommon> response = restTemplate.getForEntity(uri, ResponseCommon.class);
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		headers.set("Authorization", token);
+		HttpEntity<String> jwtEntity = new HttpEntity<String>(headers);
+		// Use Token to get Response
+		ResponseEntity<ResponseCommon> response = restTemplate.exchange(uri, HttpMethod.GET, jwtEntity,
+				ResponseCommon.class);
+		
 		if(response.getBody().success) {
 			List<UserResponseDto> listUser = mapper.convertValue(response.getBody().data, new TypeReference<List<UserResponseDto>>() {});
 			List<UserResponseDto> result = new ArrayList<>();
@@ -72,9 +97,16 @@ public class UserWebService  {
 		return null;
 	}
 	
-	public UserResponseDto getUserById(String id) {
+	public UserResponseDto getUserById(String id, String token) {
 		String uri = ConstantGlobal.API_PARENT + "/user/" + id;
-		ResponseEntity<ResponseCommon> response = restTemplate.getForEntity(uri, ResponseCommon.class);
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		headers.set("Authorization", token);
+		HttpEntity<String> jwtEntity = new HttpEntity<String>(headers);
+		// Use Token to get Response
+		ResponseEntity<ResponseCommon> response = restTemplate.exchange(uri, HttpMethod.GET, jwtEntity,
+				ResponseCommon.class);
 		if(response.getBody().success) {
 			UserResponseDto user = mapper.convertValue(response.getBody().data, new TypeReference<UserResponseDto>() {});
 			return user;
@@ -82,9 +114,16 @@ public class UserWebService  {
 		return null;
 	}
 	
-	public UserResponseDto getUserByUsername(String username) {
+	public UserResponseDto getUserByUsername(String username, String token) {
 		String uri = ConstantGlobal.API_PARENT + "/user/name/" + username;
-		ResponseEntity<ResponseCommon> response = restTemplate.getForEntity(uri, ResponseCommon.class);
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		headers.set("Authorization", token);
+		HttpEntity<String> jwtEntity = new HttpEntity<String>(headers);
+		// Use Token to get Response
+		ResponseEntity<ResponseCommon> response = restTemplate.exchange(uri, HttpMethod.GET, jwtEntity,
+				ResponseCommon.class);
 		if(response.getBody().success) {
 			UserResponseDto user = mapper.convertValue(response.getBody().data, new TypeReference<UserResponseDto>() {});
 			return user;
@@ -92,9 +131,16 @@ public class UserWebService  {
 		return null;
 	}
 	
-	public UserResponseDto getUserByEmail(String email) {
+	public UserResponseDto getUserByEmail(String email, String token) {
 		String uri = ConstantGlobal.API_PARENT + "/user/email/" + email;
-		ResponseEntity<ResponseCommon> response = restTemplate.getForEntity(uri, ResponseCommon.class);
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		headers.set("Authorization", token);
+		HttpEntity<String> jwtEntity = new HttpEntity<String>(headers);
+		// Use Token to get Response
+		ResponseEntity<ResponseCommon> response = restTemplate.exchange(uri, HttpMethod.GET, jwtEntity,
+				ResponseCommon.class);
 		if(response.getBody().success) {
 			UserResponseDto user = mapper.convertValue(response.getBody().data, new TypeReference<UserResponseDto>() {});
 			return user;
@@ -102,21 +148,38 @@ public class UserWebService  {
 		return null;
 	}
 	
-	public ResponseCommon<?> saveUser(UserEntity user) {
+	public ResponseCommon<?> saveUser(UserEntity user, String token) {
 		String uri = ConstantGlobal.API_PARENT + "/user/save";
-		ResponseEntity<ResponseCommon> response = restTemplate.postForEntity(uri, user, ResponseCommon.class);
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		headers.set("Authorization", token);
+		HttpEntity<String> jwtEntity = new HttpEntity<String>(headers);
+		// Use Token to get Response
+		ResponseEntity<ResponseCommon> response = restTemplate.exchange(uri, HttpMethod.POST, jwtEntity,
+				ResponseCommon.class, user);
+//		ResponseEntity<ResponseCommon> response = restTemplate.postForEntity(uri, user, ResponseCommon.class);
 		return response.getBody();
 	}
 	
-	public ResponseCommon<?> createUser(CreateUserDto createUserDto) {
+	public ResponseCommon<?> createUser(CreateUserDto createUserDto, String token) {
 		String uri = ConstantGlobal.API_PARENT + "/user/create";
-		ResponseEntity<ResponseCommon> response = restTemplate.postForEntity(uri, createUserDto, ResponseCommon.class);
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		headers.set("Authorization", token);
+		HttpEntity<String> jwtEntity = new HttpEntity<String>(headers);
+		// Use Token to get Response
+		ResponseEntity<ResponseCommon> response = restTemplate.exchange(uri, HttpMethod.POST, jwtEntity,
+				ResponseCommon.class, createUserDto);
+//		ResponseEntity<ResponseCommon> response = restTemplate.postForEntity(uri, createUserDto, ResponseCommon.class);
 		return response.getBody();
 	}
 	
-	public UserResponseDto createUserProfile(CreateUserProfileDto createUserProfileDto) {
+	public UserResponseDto createUserProfile(CreateUserProfileDto createUserProfileDto, String token) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		headers.set("Authorization", token);
 		
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.add("username", createUserProfileDto.getUsername());
@@ -131,22 +194,38 @@ public class UserWebService  {
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 		
 		String uri = ConstantGlobal.API_PARENT + "/user/create-user-profile";
-		ResponseEntity<UserResponseDto> response = restTemplate.postForEntity(uri, request, UserResponseDto.class);
+		ResponseEntity<UserResponseDto> response = restTemplate.exchange(uri, HttpMethod.POST, request, UserResponseDto.class, map);
 		if(response.getBody() != null) {
 			 return response.getBody();
 		}
 		return null;
 	}
 	
-	public ResponseCommon<?> updateUser(UpdateUserDto updateUserProfile) {
+	public ResponseCommon<?> updateUser(UpdateUserDto updateUserProfile, String token) {
 		String uri = ConstantGlobal.API_PARENT + "/user/update";
-		ResponseEntity<ResponseCommon> response = restTemplate.postForEntity(uri, updateUserProfile, ResponseCommon.class);
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		headers.set("Authorization", token);
+		HttpEntity<String> jwtEntity = new HttpEntity<String>(headers);
+		// Use Token to get Response
+		ResponseEntity<ResponseCommon> response = restTemplate.exchange(uri, HttpMethod.POST, jwtEntity,
+				ResponseCommon.class, updateUserProfile);
+//		ResponseEntity<ResponseCommon> response = restTemplate.postForEntity(uri, updateUserProfile, ResponseCommon.class);
 		return response.getBody();
 	}
 	
-	public ResponseCommon deteleUserById(String id) {
+	public ResponseCommon deteleUserById(String id, String token) {
 		String uri = ConstantGlobal.API_PARENT + "/user/delete/" + id;
-		ResponseEntity<ResponseCommon> response = restTemplate.getForEntity(uri, ResponseCommon.class);
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+		headers.set("Authorization", token);
+		HttpEntity<String> jwtEntity = new HttpEntity<String>(headers);
+		// Use Token to get Response
+		ResponseEntity<ResponseCommon> response = restTemplate.exchange(uri, HttpMethod.GET, jwtEntity,
+				ResponseCommon.class);
+//		ResponseEntity<ResponseCommon> response = restTemplate.getForEntity(uri, ResponseCommon.class);
 		if(response.getBody().success) {
 			return response.getBody();
 		}
