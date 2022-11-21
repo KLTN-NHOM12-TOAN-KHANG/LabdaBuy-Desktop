@@ -1,23 +1,24 @@
 package com.kltn.nhom12.LambdaBuyDesktop.service;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.kltn.SpringAPILambdaBuy.common.request.authen.LoginDto;
 import com.example.kltn.SpringAPILambdaBuy.common.request.authen.RegisterDto;
+import com.example.kltn.SpringAPILambdaBuy.common.response.AuthResponse;
 import com.example.kltn.SpringAPILambdaBuy.common.response.ResponseCommon;
-import com.example.kltn.SpringAPILambdaBuy.common.response.UserResponseDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kltn.nhom12.LambdaBuyDesktop.common.ConstantGlobal;
 
-public class AuthenticationWebService {
+@Service
+public class AuthenticationDesktopService {
 	private RestTemplate restTemplate;
 	private ObjectMapper mapper;
 	
-	public AuthenticationWebService() {
+	
+	public AuthenticationDesktopService() {
 		restTemplate = new RestTemplate();
 		mapper = new ObjectMapper();
 	}
@@ -28,12 +29,13 @@ public class AuthenticationWebService {
 		return response.getBody();
 	}
 	
-	public UserResponseDto login (LoginDto loginDto) {
+//	@Cacheable(cacheNames = "accessToken", key = "#auth.accessToken")
+	public AuthResponse login (LoginDto loginDto) {
 		String uri = ConstantGlobal.API_PARENT + "/authentication/login";
 		ResponseEntity<ResponseCommon> response = restTemplate.postForEntity(uri, loginDto, ResponseCommon.class);
 		if(response.getBody().success) {
-			UserResponseDto user = mapper.convertValue(response.getBody().data, new TypeReference<UserResponseDto>() {});
-			return user;
+			AuthResponse auth = mapper.convertValue(response.getBody().data, new TypeReference<AuthResponse>() {});
+			return auth;
 		}
 		return null;
 	}

@@ -20,43 +20,44 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-import com.example.kltn.SpringAPILambdaBuy.common.response.ProfileResponseDto;
-import com.example.kltn.SpringAPILambdaBuy.common.response.UserResponseDto;
-import com.kltn.nhom12.LambdaBuyDesktop.gui.UserFrm;
-import com.kltn.nhom12.LambdaBuyDesktop.service.ProfileDesktopService;
-import com.kltn.nhom12.LambdaBuyDesktop.service.UserDesktopService;
-import com.kltn.nhom12.LambdaBuyDesktop.utility.ClassTableUserModel;
+import com.example.kltn.SpringAPILambdaBuy.common.response.BrandResponseDto;
+import com.example.kltn.SpringAPILambdaBuy.common.response.CategoryResponseDto;
+import com.kltn.nhom12.LambdaBuyDesktop.gui.BrandFrm;
+import com.kltn.nhom12.LambdaBuyDesktop.gui.CategoryFrm;
+import com.kltn.nhom12.LambdaBuyDesktop.service.BrandDesktopService;
+import com.kltn.nhom12.LambdaBuyDesktop.service.CategoryDesktopService;
+import com.kltn.nhom12.LambdaBuyDesktop.utility.ClassTableBrandModel;
+import com.kltn.nhom12.LambdaBuyDesktop.utility.ClassTableCategoryModel;
 
-public class UserManagementController {
+public class CategoryManagementController {
 	private JPanel jpnView;
 	private JButton btnAdd;
 	private JButton btnSub;
 	private JTextField jtfSearch;
 	private String token;
 	
-	private UserDesktopService userWebService = null;
-	private ProfileDesktopService profileWebService = null;
-	private String[] listColumn = {"STT", "Mã người dùng", "Tên người dùng", "Email", "Tên", "Họ", "Ảnh đại diện", "Số điện thoại", "Địa chỉ"};
+	private CategoryDesktopService categoryDesktopService;
+	
+	private String[] listColumn = {"STT", "Mã loại", "Tên loại sản phẩm"};
 	private TableRowSorter<TableModel> rowSorter = null;
 	
 	private JTable table = null;
 	private DefaultTableModel model = null;
 	
-	public UserManagementController(JPanel jpnView, JButton btnAdd, JButton btnSub, JTextField jtfSearch, String token) {
+	public CategoryManagementController(JPanel jpnView, JButton btnAdd, JButton btnSub, JTextField jtfSearch, String token) {
 		this.jpnView = jpnView;
 		this.btnAdd = btnAdd;
 		this.btnSub = btnSub;
 		this.jtfSearch = jtfSearch;
 		this.token = token;
 		
-		userWebService = new UserDesktopService();
-		profileWebService = new ProfileDesktopService();
+		categoryDesktopService = new CategoryDesktopService();
 	}
 	
 	public void setDataToTable() {
 		try {
-			List<UserResponseDto> listItem = userWebService.getAllUser(token);
-			model = new ClassTableUserModel().setTableModel(listItem, listColumn);
+			List<CategoryResponseDto> listItem = categoryDesktopService.getAll(token);
+			model = new ClassTableCategoryModel().setTableModel(listItem, listColumn);
 			table = new JTable(model);
 			
 			rowSorter = new TableRowSorter<>(table.getModel());
@@ -127,38 +128,14 @@ public class UserManagementController {
 					int selectedRowIndex = table.getSelectedRow();
 					selectedRowIndex = table.convertRowIndexToModel(selectedRowIndex);
 					
-					UserResponseDto user = new UserResponseDto();
-					user.setProfileDto(new ProfileResponseDto());
-					user.setId(model.getValueAt(selectedRowIndex, 1).toString());
-					user.setUsername(model.getValueAt(selectedRowIndex, 2).toString());
-					user.setEmail(model.getValueAt(selectedRowIndex, 3).toString());
+					CategoryResponseDto category = new CategoryResponseDto();
+					category.setId(model.getValueAt(selectedRowIndex, 1).toString());
+					category.setName(model.getValueAt(selectedRowIndex, 2).toString());
 					
-					UserResponseDto findUser = userWebService.getUserById(UserManagementController.this.model.getValueAt(selectedRowIndex, 1).toString(), token);
-					
-					ProfileResponseDto profile = user.getProfile();
-					profile.setId(findUser.getProfile().getId());
-					profile.setFirstName(model.getValueAt(selectedRowIndex, 4).toString());
-					profile.setLastName(model.getValueAt(selectedRowIndex, 5).toString());
-					if(model.getValueAt(selectedRowIndex, 6) != null) { 
-						profile.setAvatar(model.getValueAt(selectedRowIndex, 6).toString());
-					} else {
-						profile.setAvatar(null);
-					}
-					if(model.getValueAt(selectedRowIndex, 7) != null) { 
-						profile.setPhoneNumber(model.getValueAt(selectedRowIndex, 7).toString());
-					} else {
-						profile.setPhoneNumber(null);
-					}	
-					if(model.getValueAt(selectedRowIndex, 8) != null) { 
-						profile.setAddress(model.getValueAt(selectedRowIndex, 8).toString());
-					} else {
-						profile.setAddress(null);
-					}
-					user.setProfileDto(profile);
-					UserFrm frame = null;
-					frame = new UserFrm(user, token);
+					CategoryFrm frame = null;
+					frame = new CategoryFrm(category, token);
 
-					frame.setTitle("Thông tin người dùng");
+					frame.setTitle("Thông tin loại sản phẩm");
 					frame.setResizable(false);
 					frame.setLocationRelativeTo(null);
 					frame.setVisible(true);
@@ -210,9 +187,9 @@ public class UserManagementController {
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				UserFrm frame = null;
-				frame = new UserFrm(new UserResponseDto(), token);
-				frame.setTitle("Thông tin người dùng");
+				CategoryFrm frame = null;
+				frame = new CategoryFrm(new CategoryResponseDto(), token);
+				frame.setTitle("Thông tin loại sản phẩm");
 				frame.setLocationRelativeTo(null);
 				frame.setResizable(false);
 				frame.setVisible(true);
@@ -250,9 +227,9 @@ public class UserManagementController {
 				selectedRowIndex = table.convertRowIndexToModel(selectedRowIndex);
 				
 				String id = (String)model.getValueAt(selectedRowIndex, 1);
-				userWebService.deteleUserById(id, token);
+//				userWebService.deteleUserById(id);
 				
-				jtfSearch.setText("Khoá tài khoản người dùng " + id + " thành công!");
+				jtfSearch.setText("Xóa loại sản phẩm " + id + " thành công!");
 				setDataToTable();
 			}
 		});

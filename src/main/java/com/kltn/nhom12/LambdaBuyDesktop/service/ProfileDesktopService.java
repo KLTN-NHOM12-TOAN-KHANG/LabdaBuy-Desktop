@@ -2,6 +2,7 @@ package com.kltn.nhom12.LambdaBuyDesktop.service;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
@@ -16,11 +17,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kltn.nhom12.LambdaBuyDesktop.common.ConstantGlobal;
 
-public class ProfileWebService {
+public class ProfileDesktopService {
 	private RestTemplate restTemplate;
 	private ObjectMapper mapper;
 	
-	public ProfileWebService() {
+	public ProfileDesktopService() {
 		restTemplate = new RestTemplate();
 		mapper = new ObjectMapper();
 	}
@@ -35,9 +36,10 @@ public class ProfileWebService {
 		return null;
 	}
 	
-	public ResponseCommon updateProfile(UpdateProfileDto updateProfileDto) {
+	public ResponseCommon updateProfile(UpdateProfileDto updateProfileDto, String token) {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		headers.set("Authorization", token);
 		
 		MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
 		map.add("id", updateProfileDto.getId());
@@ -50,7 +52,7 @@ public class ProfileWebService {
 		HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<MultiValueMap<String, String>>(map, headers);
 		
 		String uri = ConstantGlobal.API_PARENT + "/profile/update";
-		ResponseEntity<ResponseCommon> response = restTemplate.postForEntity(uri, request, ResponseCommon.class);
+		ResponseEntity<ResponseCommon> response = restTemplate.exchange(uri, HttpMethod.POST, request, ResponseCommon.class, map);
 
 		if(response.getBody().success) {
 			 return response.getBody();

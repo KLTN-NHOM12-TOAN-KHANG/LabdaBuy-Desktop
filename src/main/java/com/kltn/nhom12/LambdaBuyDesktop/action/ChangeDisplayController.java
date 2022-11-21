@@ -11,16 +11,22 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.kltn.nhom12.LambdaBuyDesktop.bean.MenuBean;
+import com.kltn.nhom12.LambdaBuyDesktop.gui.BrandManagementPanel;
+import com.kltn.nhom12.LambdaBuyDesktop.gui.CategoryManagementPanel;
+import com.kltn.nhom12.LambdaBuyDesktop.gui.ProductManagementPanel;
+import com.kltn.nhom12.LambdaBuyDesktop.gui.SupplierManagementPanel;
 import com.kltn.nhom12.LambdaBuyDesktop.gui.UserManagementPanel;
 
 public class ChangeDisplayController {
 	private JPanel root ;
     public String kindSelected = "";
+    private String token;
     
     private List<MenuBean> listItem = null;
 
-    public ChangeDisplayController(JPanel jpnRoot) {
+    public ChangeDisplayController(JPanel jpnRoot, String token) {
         this.root = jpnRoot;
+        this.token = token;
     }
     
     public void setView(JPanel jpnItem, JLabel jlbItem){
@@ -61,22 +67,12 @@ public class ChangeDisplayController {
 			case "HomePage":
 //				node = new PageHomePanel();
 				break;
-//            case "ProductManagement":
-//                try {
-////					node = new ProductManagementPanel();
-//				} catch (IOException e1) {
-//					// TODO Auto-generated catch block
-//					e1.printStackTrace();
-//				}
-//                break;
-//            case "CategoryManagement":
-//                try {
-////					node = new CategoryManagementPanel();
-//				} catch (IOException e1) {
-//					// TODO Auto-generated catch block
-//					e1.printStackTrace();
-//				}
-//                break;
+            case "ProductManagement":
+				node = new ProductManagementPanel(token);
+                break;
+            case "CategoryManagement":
+            	node = new CategoryManagementPanel(token);
+                break;
 //            case "OrderManagement":
 //                try {
 ////					node = new OrderManagementPanel();
@@ -86,7 +82,13 @@ public class ChangeDisplayController {
 //				}
 //                break;
             case "UserManagement":
-                node = new UserManagementPanel();
+                node = new UserManagementPanel(token);
+                break;
+            case "BrandManagement":
+                node = new BrandManagementPanel(token);
+                break;
+            case "SupplierManagement":
+                node = new SupplierManagementPanel(token);
                 break;
 //            case "QLThongKe":
 //                node = new StatisticManagementPanel();

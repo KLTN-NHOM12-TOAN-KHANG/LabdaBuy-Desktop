@@ -20,43 +20,44 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-import com.example.kltn.SpringAPILambdaBuy.common.response.ProfileResponseDto;
-import com.example.kltn.SpringAPILambdaBuy.common.response.UserResponseDto;
-import com.kltn.nhom12.LambdaBuyDesktop.gui.UserFrm;
-import com.kltn.nhom12.LambdaBuyDesktop.service.ProfileDesktopService;
-import com.kltn.nhom12.LambdaBuyDesktop.service.UserDesktopService;
-import com.kltn.nhom12.LambdaBuyDesktop.utility.ClassTableUserModel;
+import com.example.kltn.SpringAPILambdaBuy.common.response.CategoryResponseDto;
+import com.example.kltn.SpringAPILambdaBuy.common.response.SupplierResponseDto;
+import com.kltn.nhom12.LambdaBuyDesktop.gui.CategoryFrm;
+import com.kltn.nhom12.LambdaBuyDesktop.gui.SupplierFrm;
+import com.kltn.nhom12.LambdaBuyDesktop.service.CategoryDesktopService;
+import com.kltn.nhom12.LambdaBuyDesktop.service.SupplierDesktopService;
+import com.kltn.nhom12.LambdaBuyDesktop.utility.ClassTableCategoryModel;
+import com.kltn.nhom12.LambdaBuyDesktop.utility.ClassTableSupplierModel;
 
-public class UserManagementController {
+public class SupplierManagementController {
 	private JPanel jpnView;
 	private JButton btnAdd;
 	private JButton btnSub;
 	private JTextField jtfSearch;
 	private String token;
 	
-	private UserDesktopService userWebService = null;
-	private ProfileDesktopService profileWebService = null;
-	private String[] listColumn = {"STT", "Mã người dùng", "Tên người dùng", "Email", "Tên", "Họ", "Ảnh đại diện", "Số điện thoại", "Địa chỉ"};
+	private SupplierDesktopService supplierDesktopService;
+	
+	private String[] listColumn = {"STT", "Mã phân phối", "Tên nhà phân phối", "Địa chỉ", "Mô tả"};
 	private TableRowSorter<TableModel> rowSorter = null;
 	
 	private JTable table = null;
 	private DefaultTableModel model = null;
 	
-	public UserManagementController(JPanel jpnView, JButton btnAdd, JButton btnSub, JTextField jtfSearch, String token) {
+	public SupplierManagementController(JPanel jpnView, JButton btnAdd, JButton btnSub, JTextField jtfSearch, String token) {
 		this.jpnView = jpnView;
 		this.btnAdd = btnAdd;
 		this.btnSub = btnSub;
 		this.jtfSearch = jtfSearch;
 		this.token = token;
 		
-		userWebService = new UserDesktopService();
-		profileWebService = new ProfileDesktopService();
+		supplierDesktopService = new SupplierDesktopService();
 	}
 	
 	public void setDataToTable() {
 		try {
-			List<UserResponseDto> listItem = userWebService.getAllUser(token);
-			model = new ClassTableUserModel().setTableModel(listItem, listColumn);
+			List<SupplierResponseDto> listItem = supplierDesktopService.getAll(token);
+			model = new ClassTableSupplierModel().setTableModel(listItem, listColumn);
 			table = new JTable(model);
 			
 			rowSorter = new TableRowSorter<>(table.getModel());
@@ -127,38 +128,17 @@ public class UserManagementController {
 					int selectedRowIndex = table.getSelectedRow();
 					selectedRowIndex = table.convertRowIndexToModel(selectedRowIndex);
 					
-					UserResponseDto user = new UserResponseDto();
-					user.setProfileDto(new ProfileResponseDto());
-					user.setId(model.getValueAt(selectedRowIndex, 1).toString());
-					user.setUsername(model.getValueAt(selectedRowIndex, 2).toString());
-					user.setEmail(model.getValueAt(selectedRowIndex, 3).toString());
+					SupplierResponseDto supplier = new SupplierResponseDto();
+					supplier.setId(model.getValueAt(selectedRowIndex, 1).toString());
+					supplier.setName(model.getValueAt(selectedRowIndex, 2).toString());
+					supplier.setAddress(model.getValueAt(selectedRowIndex, 3).toString());
+					supplier.setDescription(model.getValueAt(selectedRowIndex, 4).toString());
 					
-					UserResponseDto findUser = userWebService.getUserById(UserManagementController.this.model.getValueAt(selectedRowIndex, 1).toString(), token);
 					
-					ProfileResponseDto profile = user.getProfile();
-					profile.setId(findUser.getProfile().getId());
-					profile.setFirstName(model.getValueAt(selectedRowIndex, 4).toString());
-					profile.setLastName(model.getValueAt(selectedRowIndex, 5).toString());
-					if(model.getValueAt(selectedRowIndex, 6) != null) { 
-						profile.setAvatar(model.getValueAt(selectedRowIndex, 6).toString());
-					} else {
-						profile.setAvatar(null);
-					}
-					if(model.getValueAt(selectedRowIndex, 7) != null) { 
-						profile.setPhoneNumber(model.getValueAt(selectedRowIndex, 7).toString());
-					} else {
-						profile.setPhoneNumber(null);
-					}	
-					if(model.getValueAt(selectedRowIndex, 8) != null) { 
-						profile.setAddress(model.getValueAt(selectedRowIndex, 8).toString());
-					} else {
-						profile.setAddress(null);
-					}
-					user.setProfileDto(profile);
-					UserFrm frame = null;
-					frame = new UserFrm(user, token);
+					SupplierFrm frame = null;
+					frame = new SupplierFrm(supplier, token);
 
-					frame.setTitle("Thông tin người dùng");
+					frame.setTitle("Thông tin nhà phân phối");
 					frame.setResizable(false);
 					frame.setLocationRelativeTo(null);
 					frame.setVisible(true);
@@ -210,9 +190,9 @@ public class UserManagementController {
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				UserFrm frame = null;
-				frame = new UserFrm(new UserResponseDto(), token);
-				frame.setTitle("Thông tin người dùng");
+				SupplierFrm frame = null;
+				frame = new SupplierFrm(new SupplierResponseDto(), token);
+				frame.setTitle("Thông tin nhà phân phối");
 				frame.setLocationRelativeTo(null);
 				frame.setResizable(false);
 				frame.setVisible(true);
@@ -250,9 +230,9 @@ public class UserManagementController {
 				selectedRowIndex = table.convertRowIndexToModel(selectedRowIndex);
 				
 				String id = (String)model.getValueAt(selectedRowIndex, 1);
-				userWebService.deteleUserById(id, token);
+//				userWebService.deteleUserById(id);
 				
-				jtfSearch.setText("Khoá tài khoản người dùng " + id + " thành công!");
+				jtfSearch.setText("Xóa nhà phân phối " + id + " thành công!");
 				setDataToTable();
 			}
 		});
