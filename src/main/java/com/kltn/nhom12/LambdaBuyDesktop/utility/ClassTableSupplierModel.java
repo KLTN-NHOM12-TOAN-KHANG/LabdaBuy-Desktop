@@ -28,8 +28,8 @@ public class ClassTableSupplierModel {
 					obj[0] = (i+1);
 					obj[1] = supplier.getId();
 					obj[2] = supplier.getName();
-					obj[3] = supplier.getAddress();
-					obj[4] = supplier.getDescription();
+					obj[3] = supplier.getDescription();
+					obj[4] = supplier.getAddress();
 					
 					dtm.addRow(obj);
 				}

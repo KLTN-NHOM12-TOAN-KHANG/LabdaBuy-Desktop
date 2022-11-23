@@ -38,7 +38,7 @@ public class SupplierManagementController {
 	
 	private SupplierDesktopService supplierDesktopService;
 	
-	private String[] listColumn = {"STT", "Mã phân phối", "Tên nhà phân phối", "Địa chỉ", "Mô tả"};
+	private String[] listColumn = {"STT", "Mã phân phối", "Tên nhà phân phối", "Mô tả", "Địa chỉ"};
 	private TableRowSorter<TableModel> rowSorter = null;
 	
 	private JTable table = null;
@@ -131,8 +131,8 @@ public class SupplierManagementController {
 					SupplierResponseDto supplier = new SupplierResponseDto();
 					supplier.setId(model.getValueAt(selectedRowIndex, 1).toString());
 					supplier.setName(model.getValueAt(selectedRowIndex, 2).toString());
-					supplier.setAddress(model.getValueAt(selectedRowIndex, 3).toString());
-					supplier.setDescription(model.getValueAt(selectedRowIndex, 4).toString());
+					supplier.setDescription(model.getValueAt(selectedRowIndex, 3).toString());
+					supplier.setAddress(model.getValueAt(selectedRowIndex, 4).toString());
 					
 					
 					SupplierFrm frame = null;
@@ -230,6 +230,7 @@ public class SupplierManagementController {
 				selectedRowIndex = table.convertRowIndexToModel(selectedRowIndex);
 				
 				String id = (String)model.getValueAt(selectedRowIndex, 1);
+				supplierDesktopService.deteleById(id, token);
 //				userWebService.deteleUserById(id);
 				
 				jtfSearch.setText("Xóa nhà phân phối " + id + " thành công!");

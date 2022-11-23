@@ -227,6 +227,7 @@ public class CategoryManagementController {
 				selectedRowIndex = table.convertRowIndexToModel(selectedRowIndex);
 				
 				String id = (String)model.getValueAt(selectedRowIndex, 1);
+				categoryDesktopService.deteleById(id, token);
 //				userWebService.deteleUserById(id);
 				
 				jtfSearch.setText("Xóa loại sản phẩm " + id + " thành công!");
