@@ -69,6 +69,7 @@ public class LoginController {
 								jlbMessage.setText("Success");
 								MainFrm frame = new MainFrm(user, "Bearer " + auth.getAccessToken());
 								frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+								frame.setResizable(true);
 								frame.setVisible(true);
 							}else {
 								jlbMessage.setText("Tài khoản không đúng!");

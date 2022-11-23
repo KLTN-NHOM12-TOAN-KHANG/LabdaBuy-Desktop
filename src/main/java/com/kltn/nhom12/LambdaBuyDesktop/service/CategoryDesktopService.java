@@ -1,7 +1,9 @@
 package com.kltn.nhom12.LambdaBuyDesktop.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.example.kltn.SpringAPILambdaBuy.common.request.category.CreateCategoryDto;
 import com.example.kltn.SpringAPILambdaBuy.common.request.category.UpdateCategoryDto;
@@ -116,26 +119,58 @@ public class CategoryDesktopService {
 	}
 	
 	public ResponseCommon<?> create(CreateCategoryDto createCategoryDto, String token) {
-		String uri = ConstantGlobal.API_PARENT + "/category/create";
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 		headers.set("Authorization", token);
-		HttpEntity<String> jwtEntity = new HttpEntity<String>(headers);
-		ResponseEntity<ResponseCommon> response = restTemplate.exchange(uri, HttpMethod.POST, jwtEntity,
-				ResponseCommon.class, createCategoryDto);
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+		
+		String uri = ConstantGlobal.API_PARENT + "/category/create";
+		
+		String urlTemplate = UriComponentsBuilder.fromHttpUrl(uri)
+		        .queryParam("name", "{name}")
+		        .encode()
+		        .toUriString();
+		
+		Map<String, String> params = new HashMap<>();
+		params.put("name", createCategoryDto.getName());
+		
+		HttpEntity<ResponseCommon> response = restTemplate.exchange(
+		        urlTemplate,
+		        HttpMethod.GET,
+		        entity,
+		        ResponseCommon.class,
+		        params
+		);
 		return response.getBody();
 	}
 	
 	public ResponseCommon<?> update(UpdateCategoryDto updateCategoryDto, String token) {
-		String uri = ConstantGlobal.API_PARENT + "/category/update";
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 		headers.set("Authorization", token);
-		HttpEntity<String> jwtEntity = new HttpEntity<String>(headers);
-		ResponseEntity<ResponseCommon> response = restTemplate.exchange(uri, HttpMethod.POST, jwtEntity,
-				ResponseCommon.class, updateCategoryDto);
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+		
+		String uri = ConstantGlobal.API_PARENT + "/category/update";
+		
+		String urlTemplate = UriComponentsBuilder.fromHttpUrl(uri)
+		        .queryParam("id", "{id}")
+		        .queryParam("name", "{name}")
+		        .encode()
+		        .toUriString();
+		
+		Map<String, String> params = new HashMap<>();
+		params.put("id", updateCategoryDto.getId());
+		params.put("name", updateCategoryDto.getName());
+		
+		HttpEntity<ResponseCommon> response = restTemplate.exchange(
+		        urlTemplate,
+		        HttpMethod.GET,
+		        entity,
+		        ResponseCommon.class,
+		        params
+		);
 		return response.getBody();
 	}
 	

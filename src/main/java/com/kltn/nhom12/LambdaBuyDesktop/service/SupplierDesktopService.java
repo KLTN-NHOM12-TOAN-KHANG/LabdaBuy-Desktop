@@ -1,7 +1,9 @@
 package com.kltn.nhom12.LambdaBuyDesktop.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -9,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.example.kltn.SpringAPILambdaBuy.common.request.category.CreateCategoryDto;
 import com.example.kltn.SpringAPILambdaBuy.common.request.category.UpdateCategoryDto;
@@ -111,26 +114,66 @@ public class SupplierDesktopService {
 	}
 	
 	public ResponseCommon<?> create(CreateSupplierDto createSupplierDto, String token) {
-		String uri = ConstantGlobal.API_PARENT + "/supplier/create";
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 		headers.set("Authorization", token);
-		HttpEntity<String> jwtEntity = new HttpEntity<String>(headers);
-		ResponseEntity<ResponseCommon> response = restTemplate.exchange(uri, HttpMethod.POST, jwtEntity,
-				ResponseCommon.class, createSupplierDto);
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+		
+		String uri = ConstantGlobal.API_PARENT + "/supplier/create";
+		
+		String urlTemplate = UriComponentsBuilder.fromHttpUrl(uri)
+		        .queryParam("name", "{name}")
+		        .queryParam("address", "{address}")
+		        .queryParam("description", "{description}")
+		        .encode()
+		        .toUriString();
+		
+		Map<String, String> params = new HashMap<>();
+		params.put("name", createSupplierDto.getName());
+		params.put("address", createSupplierDto.getAddress());
+		params.put("description", createSupplierDto.getDescription());
+		
+		HttpEntity<ResponseCommon> response = restTemplate.exchange(
+		        urlTemplate,
+		        HttpMethod.GET,
+		        entity,
+		        ResponseCommon.class,
+		        params
+		);
 		return response.getBody();
 	}
 	
 	public ResponseCommon<?> update(UpdateSupplierDto updateSupplierDto, String token) {
-		String uri = ConstantGlobal.API_PARENT + "/update/update";
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 		headers.set("Authorization", token);
-		HttpEntity<String> jwtEntity = new HttpEntity<String>(headers);
-		ResponseEntity<ResponseCommon> response = restTemplate.exchange(uri, HttpMethod.POST, jwtEntity,
-				ResponseCommon.class, updateSupplierDto);
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+		
+		String uri = ConstantGlobal.API_PARENT + "/supplier/update";
+		
+		String urlTemplate = UriComponentsBuilder.fromHttpUrl(uri)
+		        .queryParam("id", "{id}")
+		        .queryParam("name", "{name}")
+		        .queryParam("address", "{address}")
+		        .queryParam("description", "{description}")
+		        .encode()
+		        .toUriString();
+		
+		Map<String, String> params = new HashMap<>();
+		params.put("id", updateSupplierDto.getId());
+		params.put("name", updateSupplierDto.getName());
+		params.put("address", updateSupplierDto.getAddress());
+		params.put("description", updateSupplierDto.getDescription());
+		
+		HttpEntity<ResponseCommon> response = restTemplate.exchange(
+		        urlTemplate,
+		        HttpMethod.GET,
+		        entity,
+		        ResponseCommon.class,
+		        params
+		);
 		return response.getBody();
 	}
 	

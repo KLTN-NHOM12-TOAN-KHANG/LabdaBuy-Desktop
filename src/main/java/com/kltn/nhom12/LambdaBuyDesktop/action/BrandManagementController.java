@@ -142,7 +142,7 @@ public class BrandManagementController {
 					frame = new BrandFrm(brand, token);
 
 					frame.setTitle("Thông tin thương hiệu");
-					frame.setResizable(false);
+					frame.setResizable(true);
 					frame.setLocationRelativeTo(null);
 					frame.setVisible(true);
 				}
@@ -197,7 +197,7 @@ public class BrandManagementController {
 				frame = new BrandFrm(new BrandResponseDto(), token);
 				frame.setTitle("Thông tin thương hiệu");
 				frame.setLocationRelativeTo(null);
-				frame.setResizable(false);
+		        frame.setResizable(true);
 				frame.setVisible(true);
 			}
 		});
@@ -233,6 +233,7 @@ public class BrandManagementController {
 				selectedRowIndex = table.convertRowIndexToModel(selectedRowIndex);
 				
 				String id = (String)model.getValueAt(selectedRowIndex, 1);
+				brandDesktopService.deleteById(id, token);
 //				userWebService.deteleUserById(id);
 				
 				jtfSearch.setText("Khoá thương hiệu " + id + " thành công!");

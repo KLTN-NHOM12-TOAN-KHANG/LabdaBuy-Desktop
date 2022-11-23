@@ -1,7 +1,11 @@
 package com.kltn.nhom12.LambdaBuyDesktop.service;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -9,10 +13,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import com.example.kltn.SpringAPILambdaBuy.common.request.brand.CreateBrandDto;
 import com.example.kltn.SpringAPILambdaBuy.common.request.brand.UpdateBrandDto;
@@ -31,6 +37,7 @@ public class BrandDesktopService {
 	
 	public BrandDesktopService() {
 		restTemplate = new RestTemplate();
+		restTemplate.getMessageConverters().add(0, new StringHttpMessageConverter(Charset.forName("UTF-8")));
 		mapper = new ObjectMapper();
 	}
 	
@@ -83,34 +90,84 @@ public class BrandDesktopService {
 		headers.set("Authorization", token);
 		HttpEntity<String> jwtEntity = new HttpEntity<String>(headers);
 		// Use Token to get Response
-		ResponseEntity<ResponseCommon> response = restTemplate.exchange(uri, HttpMethod.POST, jwtEntity,
-				ResponseCommon.class, brand);
+//		ResponseEntity<ResponseCommon> response = restTemplate.exchange(uri, HttpMethod.POST, jwtEntity,
+//				ResponseCommon.class, brand);
+		ResponseEntity<ResponseCommon> response = restTemplate.postForEntity(uri, jwtEntity, ResponseCommon.class, brand);
 		return response.getBody();
 	}
 	
 	public ResponseCommon<?> create(CreateBrandDto createBrandDto, String token) {
-		String uri = ConstantGlobal.API_PARENT + "/brand/create";
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 		headers.set("Authorization", token);
-		HttpEntity<String> jwtEntity = new HttpEntity<String>(headers);
-		ResponseEntity<ResponseCommon> response = restTemplate.exchange(uri, HttpMethod.POST, jwtEntity,
-				ResponseCommon.class, createBrandDto);
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+		
+		String uri = ConstantGlobal.API_PARENT + "/brand/create";
+		
+		String urlTemplate = UriComponentsBuilder.fromHttpUrl(uri)
+		        .queryParam("name", "{name}")
+		        .queryParam("fullName", "{fullName}")
+		        .queryParam("address", "{address}")
+		        .encode()
+		        .toUriString();
+		
+		Map<String, String> params = new HashMap<>();
+		params.put("name", createBrandDto.getName());
+		params.put("fullName", createBrandDto.getFullName());
+		params.put("address", createBrandDto.getAddress());
+		
+		HttpEntity<ResponseCommon> response = restTemplate.exchange(
+		        urlTemplate,
+		        HttpMethod.GET,
+		        entity,
+		        ResponseCommon.class,
+		        params
+		);
 		return response.getBody();
 	}
 	
 	public ResponseCommon<?> update(UpdateBrandDto updateBrandDto, String token) {
-		
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
 		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
 		headers.set("Authorization", token);
-		HttpEntity<String> jwtEntity = new HttpEntity<String>(headers);
+		HttpEntity<?> entity = new HttpEntity<>(headers);
+		
 		String uri = ConstantGlobal.API_PARENT + "/brand/update";
-		ResponseEntity<ResponseCommon> response = restTemplate.exchange(uri, HttpMethod.POST, jwtEntity,
-				ResponseCommon.class, updateBrandDto);
+		
+		String urlTemplate = UriComponentsBuilder.fromHttpUrl(uri)
+		        .queryParam("id", "{id}")
+		        .queryParam("name", "{name}")
+		        .queryParam("fullName", "{fullName}")
+		        .queryParam("address", "{address}")
+		        .encode()
+		        .toUriString();
+		
+		Map<String, String> params = new HashMap<>();
+		params.put("id", updateBrandDto.getId());
+		params.put("name", updateBrandDto.getName());
+		params.put("fullName", updateBrandDto.getFullName());
+		params.put("address", updateBrandDto.getAddress());
+		
+		HttpEntity<ResponseCommon> response = restTemplate.exchange(
+		        urlTemplate,
+		        HttpMethod.GET,
+		        entity,
+		        ResponseCommon.class,
+		        params
+		);
 		return response.getBody();
+//		HttpHeaders headers = new HttpHeaders();
+//		headers.set("Content-Type", MediaType.APPLICATION_JSON_VALUE);
+//		headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
+//		headers.set("Authorization", token);
+//		HttpEntity<String> jwtEntity = new HttpEntity<String>(headers);
+//		String uri = ConstantGlobal.API_PARENT + "/brand/update";
+////		ResponseEntity<ResponseCommon> response = restTemplate.exchange(uri, HttpMethod.POST, jwtEntity,
+////				ResponseCommon.class, updateBrandDto);
+//		ResponseEntity<ResponseCommon> response = restTemplate.exchange(uri, HttpMethod.POST, jwtEntity, ResponseCommon.class, updateBrandDto);;
+//		return response.getBody();
 	}
 	
 	public ResponseCommon<?> deleteById(String id, String token) {

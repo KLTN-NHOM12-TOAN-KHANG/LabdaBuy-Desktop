@@ -33,12 +33,12 @@ public class SupplierController {
 	
 	private SupplierDesktopService supplierDesktopService;
 	
-	public SupplierController(String token, JButton btnSubmit, JTextField jtfId, JTextField jtfName, JTextArea jtaDescription, JTextArea jtaAddress, JLabel jlbMessage) {
+	public SupplierController(String token, JButton btnSubmit, JTextField jtfId, JTextField jtfName, JTextArea jtfDescription, JTextArea jtaAddress, JLabel jlbMessage) {
 		this.token = token;
 		this.btnSubmit = btnSubmit;
 		this.jtfId = jtfId;
 		this.jtfName = jtfName;
-		this.jtaDescription = jtaAddress;
+		this.jtaDescription = jtaDescription;
 		this.jtaAddress = jtaAddress;
 		
 		this.jlbMessage = jlbMessage;
@@ -101,9 +101,22 @@ public class SupplierController {
 						updateSupplierDto.setName(jtfName.getText());
 						updateSupplierDto.setDescription(jtaDescription.getText());
 						updateSupplierDto.setAddress(jtaAddress.getText());
+						
 						supplierDesktopService.update(updateSupplierDto, token);
 						
 						jlbMessage.setText("Cập nhật dữ liệu thành công!");
+						
+//						
+//						updateProfile = new UpdateProfileDto();
+//						updateProfile.setId(user.getProfile().getId());
+//						updateProfile.setFirstName(jtfFirstName.getText());
+//						updateProfile.setLastName(jtfLastName.getText());
+//						updateProfile.setPhoneNumber(jtfPhoneNumber.getText());
+//						updateProfile.setAvatar(jlbAvatar.getText());
+//						updateProfile.setAddress(jtaAddress.getText());
+//						profileWebService.updateProfile(updateProfile, token);
+//						
+//						jlbMessage.setText("Cập nhật dữ liệu thành công!");
 					} else {
 						createSupplierDto = new CreateSupplierDto();
 						createSupplierDto.setName(jtfName.getText());
