@@ -30,7 +30,7 @@ public class MainFrm extends JFrame {
 		controller.setView(jpnHome, jlbHome);
 
 		List<MenuBean> listItem = new ArrayList<>();
-		listItem.add(new MenuBean("HomePage", jpnHome, jlbHome));
+		listItem.add(new MenuBean("HomeManagementPanel", jpnHome, jlbHome));
 		listItem.add(new MenuBean("BrandManagement", jpnBrand, jlbBrand));
 		listItem.add(new MenuBean("ProductManagement", jpnProductManagement, jlbProductManagement));
 		listItem.add(new MenuBean("CategoryManagement", jpnCategoryManagement, jlbCategoryManagement));
