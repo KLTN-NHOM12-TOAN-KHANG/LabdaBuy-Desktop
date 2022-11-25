@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import com.kltn.nhom12.LambdaBuyDesktop.bean.MenuBean;
 import com.kltn.nhom12.LambdaBuyDesktop.gui.BrandManagementPanel;
 import com.kltn.nhom12.LambdaBuyDesktop.gui.CategoryManagementPanel;
+import com.kltn.nhom12.LambdaBuyDesktop.gui.HomeManagementPanel;
 import com.kltn.nhom12.LambdaBuyDesktop.gui.ProductManagementPanel;
 import com.kltn.nhom12.LambdaBuyDesktop.gui.SupplierManagementPanel;
 import com.kltn.nhom12.LambdaBuyDesktop.gui.UserManagementPanel;
@@ -30,7 +31,7 @@ public class ChangeDisplayController {
     }
     
     public void setView(JPanel jpnItem, JLabel jlbItem){
-        kindSelected = "UserManagement";
+        kindSelected = "HomeManagementPanel";
         jpnItem.setBackground(new Color(96,100,191));
         jlbItem.setBackground(new Color(96,100,191));
 //        JPanel node = new QLSanPhamPanel();
@@ -64,8 +65,8 @@ public class ChangeDisplayController {
         @Override
 		public void mouseClicked(MouseEvent e) {
 			switch(kind){
-			case "HomePage":
-//				node = new PageHomePanel();
+			case "HomeManagementPanel":
+				node = new HomeManagementPanel();
 				break;
             case "ProductManagement":
 				node = new ProductManagementPanel(token);
