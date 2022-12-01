@@ -2,12 +2,19 @@ package com.kltn.nhom12.LambdaBuyDesktop.gui;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.imageio.ImageIO;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.kltn.SpringAPILambdaBuy.common.response.UserResponseDto;
 import com.kltn.nhom12.LambdaBuyDesktop.action.UserController;
@@ -17,6 +24,7 @@ public class UserFrm extends JFrame {
     private final JFileChooser openFileChooser;
     private BufferedImage originalBI;
     private JComboBox comboBox;
+    private MultipartFile avatarFile;
     /**
      * Creates new form ProductFrm
      */
@@ -27,7 +35,7 @@ public class UserFrm extends JFrame {
         openFileChooser.setCurrentDirectory(new File("D:\\"));
         openFileChooser.setFileFilter(new FileNameExtensionFilter("PNG images", "png"));
         
-        UserController controller = new UserController(token, jbtSave, jtfId, jtfUsername, jtfEmail, jtfFirstName, jtfLastName, jtfPhoneNumber, jlbAvatar, jtaAddress, jlbMessage);
+        UserController controller = new UserController(token, jbtSave, jtfId, jtfUsername, jtfEmail, jtfFirstName, jtfLastName, jtfPhoneNumber, jlbAvatar, avatarFile, jtaAddress, jlbMessage);
         controller.setView(userDto);
         controller.setEvent();
     }
@@ -248,6 +256,18 @@ public class UserFrm extends JFrame {
         int returnValue = openFileChooser.showOpenDialog(this);
         if(returnValue == JFileChooser.APPROVE_OPTION){
             try {
+            	File avartarImage = openFileChooser.getSelectedFile();
+            	Path path = Paths.get(avartarImage.getPath());
+            	String name = openFileChooser.getSelectedFile().getName();
+            	String originalFileName = openFileChooser.getSelectedFile().getName();
+            	String contentType = "images/png";
+            	byte[] content = null;
+            	try {
+            	    content = Files.readAllBytes(path);
+            	} catch (final IOException e) {
+            	}
+            	avatarFile = new MockMultipartFile(name,
+            	                     originalFileName, contentType, content);
                 originalBI = ImageIO.read(openFileChooser.getSelectedFile());
                 jlbAvatar.setText(openFileChooser.getSelectedFile().getName());
                 jlbMessage.setText("Image file successfully loaded!");
