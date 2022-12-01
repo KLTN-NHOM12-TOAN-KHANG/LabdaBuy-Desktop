@@ -3,12 +3,17 @@ package com.kltn.nhom12.LambdaBuyDesktop.action;
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
+import java.util.Base64;
 import java.util.UUID;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.kltn.SpringAPILambdaBuy.common.request.profile.UpdateProfileDto;
 import com.example.kltn.SpringAPILambdaBuy.common.request.user.CreateUserProfileDto;
@@ -26,6 +31,7 @@ public class UserController {
 	private JTextField jtfLastName;
 	private JTextField jtfPhoneNumber;
 	private JLabel jlbAvatar;
+	private MultipartFile avatarFile;
 	private JTextArea jtaAddress;
 	
 	private JLabel jlbMessage;
@@ -37,7 +43,7 @@ public class UserController {
 	private ProfileDesktopService profileWebService;
 	private String token;
 	
-	public UserController(String token, JButton btnSubmit, JTextField jtfId, JTextField jtfUsename, JTextField jtfEmail, JTextField jtfFirstName, JTextField jtfLastName, JTextField jtfPhoneNumber, JLabel jlbAvatar, JTextArea jtaAddress, JLabel jlbMessage) {
+	public UserController(String token, JButton btnSubmit, JTextField jtfId, JTextField jtfUsename, JTextField jtfEmail, JTextField jtfFirstName, JTextField jtfLastName, JTextField jtfPhoneNumber, JLabel jlbAvatar, MultipartFile avatarFile, JTextArea jtaAddress, JLabel jlbMessage) {
 		this.token = token;
 		this.btnSubmit = btnSubmit;
 		this.jtfId = jtfId;
@@ -47,6 +53,7 @@ public class UserController {
 		this.jtfLastName = jtfLastName;
 		this.jtfPhoneNumber = jtfPhoneNumber;
 		this.jlbAvatar = jlbAvatar;
+		this.avatarFile = avatarFile;
 		this.jtaAddress = jtaAddress;
 		
 		this.jlbMessage = jlbMessage;
@@ -116,7 +123,17 @@ public class UserController {
 						updateProfile.setFirstName(jtfFirstName.getText());
 						updateProfile.setLastName(jtfLastName.getText());
 						updateProfile.setPhoneNumber(jtfPhoneNumber.getText());
-						updateProfile.setAvatar(jlbAvatar.getText());
+						
+						String avatarImage = StringUtils.cleanPath(avatarFile.getOriginalFilename());
+						if(avatarImage.contains(".."))
+						{
+							System.out.println("not a a valid file");
+						}
+						try {
+							updateProfile.setAvatar(Base64.getEncoder().encodeToString(avatarFile.getBytes()));
+						} catch (IOException ex) {
+							ex.printStackTrace();
+						}
 						updateProfile.setAddress(jtaAddress.getText());
 						profileWebService.updateProfile(updateProfile, token);
 						
